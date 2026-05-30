@@ -76,7 +76,7 @@
 
 <div id="auth-screen">
     <div class="login-card">
-        <h2>🚀 OTT Premium</h2>
+        <h2>🚀 OTT TV Premium</h2>
         <input type="text" id="keyInput" placeholder="Enter Your Access Key">
         <button id="loginBtn">Unlock Experience</button>
         <p id="status-msg"></p>
@@ -132,7 +132,7 @@
     };
 
     document.getElementById("logoutBtn").onclick = () => {
-        localStorage.removeItem("iptv_access_key");
+        localStorage.removeItem("ott_tv_access_key");
         location.reload();
     };
 
@@ -148,7 +148,7 @@
                 const now = new Date().getTime();
                 const daysLimit = data.expire; // Matches your JSON 'expire' label
 
-                if (daysLimit === 0) return handleFail("❌ Key Expired.");
+                if (daysLimit === 0) return handleFail("❌ Your Key has benn Expired.Contact with admin");
 
                 let expiryDate = data.expiresAt;
                 // If it's a new key, calculate and save expiry time
