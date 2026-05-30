@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Ottstore BD</title>
+    <title>IPTV Stable - Secure Session</title>
     <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
 
@@ -27,6 +27,19 @@
             background: #e50914; color: white; font-weight: bold; cursor: pointer;
         }
         #status-msg { margin-top: 15px; font-size: 14px; font-weight: 600; min-height: 20px; }
+
+        /* WHATSAPP DIVIDER & BUTTON */
+        .divider { margin: 20px 0; border-top: 1px solid #374151; position: relative; }
+        .divider span { 
+            position: absolute; top: -10px; left: 50%; transform: translateX(-50%); 
+            background: #111827; padding: 0 10px; color: #6b7280; font-size: 12px;
+        }
+        .wa-btn {
+            display: block; width: 100%; padding: 12px 20px; background: #25D366;
+            color: white; text-decoration: none; border-radius: 8px; font-weight: 600;
+            font-size: 14px; transition: 0.3s;
+        }
+        .wa-btn:hover { background: #1ebd59; transform: translateY(-2px); }
 
         /* IPTV APP STYLES */
         #app-content { display: none; }
@@ -53,7 +66,6 @@
         .card:hover { transform:scale(1.03); background:#1f2937; border-color: #374151; transition: .2s; }
         .logo { width:65px; height:65px; object-fit:contain; border-radius:12px; margin-bottom:8px; }
         .name { font-weight:600; font-size:14px; }
-        .group { font-size:11px; opacity:.6; margin-top:4px; }
         
         /* PLAYER */
         .player { position:fixed; inset:0; background:black; display:none; z-index:99999; }
@@ -67,10 +79,16 @@
 
 <div id="auth-screen">
     <div class="login-card">
-        <h2>🚀 OTT TV Premium</h2>
+        <h2>🚀 IPTV Premium</h2>
         <input type="text" id="keyInput" placeholder="Enter Access Key">
         <button id="loginBtn">Unlock App</button>
         <p id="status-msg"></p>
+
+        <div class="divider"><span>OR</span></div>
+        
+        <a href="https://wa.me/8801804728638" target="_blank" class="wa-btn">
+            💬 Chat with Admin
+        </a>
     </div>
 </div>
 
@@ -94,13 +112,13 @@
     import { getDatabase, ref, get, update, child } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-database.js";
 
     const firebaseConfig = {
-        apiKey: "AIzaSyDD61OX-aVWgv2jtUXKemTUoBZhvSwefFo",
-        authDomain: "access-a3fa3.firebaseapp.com",
-        databaseURL: "https://access-a3fa3-default-rtdb.firebaseio.com/",
-        projectId: "access-a3fa3",
-        storageBucket: "access-a3fa3.firebasestorage.app",
-        messagingSenderId: "1044711265002",
-        appId: "1:1044711265002:web:cccf942c45cf5457343d93"
+        apiKey: "AIzaSyBcEwdYngRGd890oOCHVuB-Sjo9RPrDMzw",
+        authDomain: "webzone-1bb3a.firebaseapp.com",
+        databaseURL: "https://webzone-1bb3a-default-rtdb.firebaseio.com",
+        projectId: "webzone-1bb3a",
+        storageBucket: "webzone-1bb3a.firebasestorage.app",
+        messagingSenderId: "681482285990",
+        appId: "1:681482285990:web:389ef2e0b5ad4327fed567"
     };
 
     const fbApp = initializeApp(firebaseConfig);
@@ -111,24 +129,22 @@
     const keyInput = document.getElementById("keyInput");
     const msg = document.getElementById("status-msg");
 
-    // --- SESSION CHECK ON LOAD ---
+    // SESSION CHECK ON LOAD
     window.addEventListener("DOMContentLoaded", () => {
         const savedKey = localStorage.getItem("iptv_access_key");
         if (savedKey) {
-            validateKey(savedKey, true); // True means auto-login mode
+            validateKey(savedKey, true);
         }
     });
 
-    // --- LOGIN ACTION ---
     loginBtn.addEventListener("click", () => {
         const key = keyInput.value.trim();
         if (key) validateKey(key, false);
     });
 
-    // --- LOGOUT ACTION ---
     logoutBtn.addEventListener("click", () => {
         localStorage.removeItem("iptv_access_key");
-        location.reload(); // Refresh to show login screen
+        location.reload();
     });
 
     async function validateKey(key, isAutoLogin) {
@@ -160,7 +176,6 @@
                 if (days !== 9999 && now > expiry) {
                     handleFail("❌ Time Ran Out.");
                 } else {
-                    // SUCCESS
                     localStorage.setItem("iptv_access_key", key);
                     grantAccess(data.name, data.packageName);
                 }
@@ -168,7 +183,7 @@
                 handleFail("❌ Invalid Key.");
             }
         } catch (e) {
-            handleFail("⚠️ Contact With admin.Invalid Aceess token");
+            handleFail("⚠️ Invalid access key.Contact with admin");
         }
     }
 
@@ -188,7 +203,7 @@
         initIPTV();
     }
 
-    /* --- IPTV LOGIC --- */
+    /* IPTV LOGIC */
     const playlists = [
         {name:'BDTV',url:'https://raw.githubusercontent.com/hasanraf/BDzone/refs/heads/main/BDTv.m3u'},
         {name:'Sports',url:'https://raw.githubusercontent.com/hasanraf/sports/refs/heads/main/sports.m3u'},
@@ -200,7 +215,7 @@
 
     function initIPTV() {
         const tabsBox = document.getElementById("tabs");
-        if (tabsBox.children.length > 0) return; // Prevent duplicate tabs
+        if (tabsBox.children.length > 0) return;
 
         playlists.forEach((p, i) => {
             const tab = document.createElement("div");
@@ -227,7 +242,7 @@
                     if (stream && stream.startsWith("http")) {
                         let logoMatch = lines[i].match(/tvg-logo="(.*?)"/);
                         let logo = logoMatch ? logoMatch[1] : "https://via.placeholder.com/70";
-                        channels.push({ name, url: stream, logo, group: tab.innerText });
+                        channels.push({ name, url: stream, logo });
                     }
                 }
             }
@@ -243,7 +258,6 @@
             <div class="card" onclick="window.playStream('${ch.url}')">
                 <img class="logo" src="${ch.logo}" onerror="this.src='https://via.placeholder.com/70'">
                 <div class="name">${ch.name}</div>
-                <div class="group">${ch.group}</div>
             </div>
         `).join("");
     }
