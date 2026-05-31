@@ -120,13 +120,13 @@
 
                 // 2. Expiry Check
                 if (end && now > end) {
-                    return fail("❌ Access Expired");
+                    return fail("❌ Access Expired.Contact with admin");
                 }
 
                 localStorage.setItem(STORAGE_KEY, key);
                 showApp(data.name, (data.package || data.Package || "Standard"), start, end);
             } else {
-                fail("❌ Invalid Key");
+                fail("❌ Invalid Key.Contact with Admin");
             }
         } catch (e) {
             fail("⚠️ Server Connection Error");
