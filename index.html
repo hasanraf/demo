@@ -3,102 +3,57 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>OTT Store BD - Premium Access</title>
+    <title>OTT Store BD</title>
     <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
-
     <style>
-        /* --- UI THEME --- */
         :root { --primary: #e50914; --bg: #0b1220; --card: #111827; --text: #ffffff; --border: #1f2937; }
         * { margin:0; padding:0; box-sizing:border-box; font-family: 'Inter', sans-serif; }
-        body { background: var(--bg); color: var(--text); overflow-x: hidden; }
-
-        /* --- LOGIN SCREEN --- */
-        #auth-screen {
-            position: fixed; inset: 0; background: var(--bg);
-            display: flex; align-items: center; justify-content: center; z-index: 1000000;
-        }
-        .login-card {
-            background: var(--card); padding: 40px; border-radius: 16px;
-            width: 90%; max-width: 360px; text-align: center; 
-            box-shadow: 0 10px 30px rgba(0,0,0,0.5); border: 1px solid var(--border);
-        }
-        .login-card h2 { margin-bottom: 25px; font-weight: 700; color: #fff; }
-        .login-card input {
-            width: 100%; padding: 14px; margin-bottom: 15px; border-radius: 8px;
-            border: 1px solid #374151; background: #1f2937; color: white; outline: none;
-        }
-        .login-card button {
-            width: 100%; padding: 14px; border-radius: 8px; border: none;
-            background: var(--primary); color: white; font-weight: 700; cursor: pointer; transition: 0.2s;
-        }
-        .login-card button:hover { opacity: 0.9; transform: scale(0.98); }
-        #status-msg { margin-top: 15px; font-size: 13px; font-weight: 600; min-height: 20px; }
-
-        .divider { margin: 25px 0; border-top: 1px solid #374151; position: relative; }
-        .divider span { 
-            position: absolute; top: -10px; left: 50%; transform: translateX(-50%); 
-            background: var(--card); padding: 0 12px; color: #6b7280; font-size: 11px;
-        }
-        .wa-btn {
-            display: block; width: 100%; padding: 12px; background: #25D366;
-            color: white; text-decoration: none; border-radius: 8px; font-weight: 600; font-size: 14px;
-        }
-
-        /* --- MAIN APP UI --- */
+        body { background: var(--bg); color: var(--text); }
+        #auth-screen { position: fixed; inset: 0; background: var(--bg); display: flex; align-items: center; justify-content: center; z-index: 1000; }
+        .login-card { background: var(--card); padding: 30px; border-radius: 12px; width: 90%; max-width: 350px; text-align: center; border: 1px solid var(--border); }
+        input { width: 100%; padding: 12px; margin: 15px 0; border-radius: 6px; border: 1px solid #374151; background: #1f2937; color: white; outline: none; }
+        button#loginBtn { width: 100%; padding: 12px; background: var(--primary); border: none; border-radius: 6px; color: white; font-weight: 700; cursor: pointer; }
+        #status-msg { margin-top: 15px; font-size: 13px; color: #ef4444; font-weight: 600; }
         #app-content { display: none; }
-        .header { 
-            padding: 15px 20px; background: var(--card); position: sticky; top: 0; z-index: 100;
-            border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center;
-        }
-        .logout-btn {
-            background: #374151; color: white; border: none; padding: 7px 14px;
-            border-radius: 6px; font-size: 12px; cursor: pointer; font-weight: 600;
-        }
-        .logout-btn:hover { background: #e50914; }
-        .info-bar { font-size: 11px; padding: 8px 20px; background: #0f172a; color: #94a3b8; border-bottom: 1px solid var(--border); }
-        
+        .header { padding: 15px 20px; background: var(--card); display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border); }
+        .info-bar { padding: 12px 20px; background: #0f172a; font-size: 11px; color: #94a3b8; border-bottom: 1px solid var(--border); line-height: 1.6; }
+        .info-bar b { color: #fff; }
+        .logout-btn { background: #374151; color: white; border: none; padding: 6px 12px; border-radius: 4px; cursor: pointer; font-size: 11px; }
         .tabs { display: flex; gap: 10px; padding: 15px; overflow-x: auto; scrollbar-width: none; }
-        .tab { padding: 8px 20px; background: var(--border); border-radius: 20px; white-space: nowrap; cursor: pointer; font-size: 13px; transition: 0.2s; }
+        .tab { padding: 8px 16px; background: var(--border); border-radius: 20px; font-size: 12px; cursor: pointer; white-space: nowrap; transition: 0.3s; }
         .tab.active { background: var(--primary); font-weight: 600; }
-
-        .grid { padding: 15px; display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 15px; }
-        .card { background: var(--card); border-radius: 12px; padding: 15px; cursor: pointer; text-align: center; border: 1px solid transparent; transition: 0.3s; }
-        .card:hover { transform: translateY(-5px); border-color: #374151; background: #1f2937; }
-        .logo { width: 70px; height: 70px; object-fit: contain; border-radius: 10px; margin-bottom: 10px; background: #000; }
-        .name { font-weight: 600; font-size: 13px; line-height: 1.4; }
-
-        /* --- VIDEO PLAYER --- */
-        .player { position: fixed; inset: 0; background: #000; display: none; z-index: 999999; }
-        .player video { width: 100%; height: 100%; }
-        .close-vid { position: absolute; top: 20px; right: 20px; width: 45px; height: 45px; background: rgba(229, 9, 20, 0.8); border: none; border-radius: 50%; color: white; font-size: 20px; cursor: pointer; z-index: 10; }
+        .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); gap: 15px; padding: 15px; }
+        .card { background: var(--card); padding: 10px; border-radius: 8px; text-align: center; cursor: pointer; border: 1px solid transparent; }
+        .card:hover { border-color: #374151; transform: translateY(-3px); }
+        .card img { width: 60px; height: 60px; object-fit: contain; margin-bottom: 8px; border-radius: 5px; }
+        .player { position: fixed; inset: 0; background: #000; display: none; z-index: 2000; }
+        video { width: 100%; height: 100%; }
+        .close-vid { position: absolute; top: 20px; right: 20px; background: var(--primary); color: white; border: none; width: 40px; height: 40px; border-radius: 50%; cursor: pointer; font-size: 20px; z-index: 2100; }
     </style>
 </head>
 <body>
 
 <div id="auth-screen">
     <div class="login-card">
-        <h2>🚀 OTT Premium</h2>
-        <input type="text" id="keyInput" placeholder="Enter Your Access Key">
-        <button id="loginBtn">Unlock App</button>
+        <h2 style="letter-spacing: 1px;">OTT PREMIUM</h2>
+        <input type="text" id="keyInput" placeholder="Enter Access Key">
+        <button id="loginBtn">ACTIVATE</button>
         <p id="status-msg"></p>
-        <div class="divider"><span>SUPPORT</span></div>
-        <a href="https://wa.me/8801804728638" target="_blank" class="wa-btn">💬 Chat with Admin</a>
     </div>
 </div>
 
 <div id="app-content">
     <div class="header">
-        <div style="font-weight:700; font-size:20px;">📺 LIVE TV</div>
-        <button class="logout-btn" id="logoutBtn">Logout</button>
+        <div style="font-weight:700; color: var(--primary);">OTT STORE BD</div>
+        <button class="logout-btn" id="logoutBtn">LOGOUT</button>
     </div>
     <div class="info-bar">
-        User: <span id="displayUser" style="color:white">...</span> | 
-        Plan: <span id="displayPlan" style="color:white">...</span>
+        USER: <b id="displayUser"></b> | PLAN: <b id="displayPlan"></b><br>
+        JOINED: <b id="displayStart"></b> | EXPIRES: <b id="displayEnd" style="color:#25D366"></b>
     </div>
     <div class="tabs" id="tabs"></div>
     <div id="grid" class="grid"></div>
-
     <div class="player" id="player">
         <button class="close-vid" id="closeVideo">✕</button>
         <video id="video" controls autoplay playsinline></video>
@@ -109,7 +64,6 @@
     import { initializeApp } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-app.js";
     import { getDatabase, ref, get, update, child } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-database.js";
 
-    // YOUR FIREBASE CONFIG
     const firebaseConfig = {
         apiKey: "AIzaSyDD61OX-aVWgv2jtUXKemTUoBZhvSwefFo",
         authDomain: "access-a3fa3.firebaseapp.com",
@@ -122,136 +76,129 @@
 
     const fbApp = initializeApp(firebaseConfig);
     const db = getDatabase(fbApp);
+    const STORAGE_KEY = "ott_session_v2";
 
-    // PERSISTENCE STORAGE KEY
-    const STORAGE_KEY = "ott_user_access_token";
+    function formatDate(ts) {
+        if (!ts) return "Lifetime";
+        return new Date(ts).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' });
+    }
 
-    // CHECK FOR SAVED LOGIN
-    window.addEventListener("DOMContentLoaded", () => {
-        const savedKey = localStorage.getItem(STORAGE_KEY);
-        if (savedKey) validateKey(savedKey, true);
-    });
+    window.onload = () => {
+        const saved = localStorage.getItem(STORAGE_KEY);
+        if (saved) validate(saved, true);
+    };
 
     document.getElementById("loginBtn").onclick = () => {
-        const key = document.getElementById("keyInput").value.trim();
-        if (key) validateKey(key, false);
+        const val = document.getElementById("keyInput").value.trim();
+        if (val) validate(val, false);
     };
 
-    // --- FIXED LOGOUT LOGIC ---
     document.getElementById("logoutBtn").onclick = () => {
-        localStorage.removeItem(STORAGE_KEY); // Clean up storage
-        location.reload(); // Refresh to show login screen
+        localStorage.removeItem(STORAGE_KEY);
+        location.reload();
     };
 
-    async function validateKey(key, isAuto) {
+    async function validate(key, isAuto) {
         const msg = document.getElementById("status-msg");
-        if (!isAuto) msg.innerText = "Verifying...";
-
+        if (!isAuto) msg.innerText = "Verifying Key...";
+        
         try {
-            const snapshot = await get(child(ref(db), `valid_keys/${key}`));
-            if (snapshot.exists()) {
-                const data = snapshot.val();
+            const snap = await get(child(ref(db), `valid_keys/${key}`));
+            if (snap.exists()) {
+                const data = snap.val();
                 const now = new Date().getTime();
                 
-                // Matches your JSON structure
-                const daysLimit = data.expire || 0; 
+                let start = data.subscribedAt;
+                let end = data.expiresAt;
 
-                // Check expiry
-                let expiryDate = data.expiresAt;
-                if (daysLimit !== 9999 && !expiryDate) {
-                    expiryDate = now + (daysLimit * 24 * 60 * 60 * 1000);
-                    await update(ref(db, `valid_keys/${key}`), { expiresAt: expiryDate });
+                // 1. Handle auto-generation for new keys
+                if (!start && data.expire > 0) {
+                    start = now;
+                    end = (data.expire === 9999) ? null : now + (data.expire * 24 * 60 * 60 * 1000);
+                    await update(ref(db, `valid_keys/${key}`), { subscribedAt: start, expiresAt: end });
                 }
 
-                if (daysLimit !== 9999 && now > expiryDate) {
-                    handleFail("❌ Access Expired. Contact Admin.");
-                } else {
-                    localStorage.setItem(STORAGE_KEY, key);
-                    // Handles 'package' or 'Package'
-                    const userPlan = data.package || data.Package || "Standard Plan";
-                    showApp(data.name, userPlan);
+                // 2. Expiry Check
+                if (end && now > end) {
+                    return fail("❌ Access Expired");
                 }
-            } else { handleFail("❌ Invalid Key."); }
-        } catch (e) { 
-            console.error(e);
-            handleFail("⚠️ Connection Error. Check Rules."); 
+
+                localStorage.setItem(STORAGE_KEY, key);
+                showApp(data.name, (data.package || data.Package || "Standard"), start, end);
+            } else {
+                fail("❌ Invalid Key");
+            }
+        } catch (e) {
+            fail("⚠️ Server Connection Error");
         }
     }
 
-    function handleFail(txt) {
+    function fail(t) {
         localStorage.removeItem(STORAGE_KEY);
-        const msg = document.getElementById("status-msg");
-        msg.style.color = "#ef4444";
-        msg.innerText = txt;
+        document.getElementById("status-msg").innerText = t;
         document.getElementById("auth-screen").style.display = "flex";
         document.getElementById("app-content").style.display = "none";
     }
 
-    function showApp(name, plan) {
+    function showApp(u, p, s, e) {
         document.getElementById("auth-screen").style.display = "none";
         document.getElementById("app-content").style.display = "block";
-        document.getElementById("displayUser").innerText = name;
-        document.getElementById("displayPlan").innerText = plan;
-        initIPTV();
+        document.getElementById("displayUser").innerText = u;
+        document.getElementById("displayPlan").innerText = p;
+        document.getElementById("displayStart").innerText = formatDate(s);
+        document.getElementById("displayEnd").innerText = formatDate(e);
+        loadPlaylists();
     }
 
-    /* --- IPTV LOADING LOGIC --- */
-    const playlists = [
+    const sources = [
         {name:'BDTV',url:'https://raw.githubusercontent.com/hasanraf/BDzone/refs/heads/main/BDTv.m3u'},
         {name:'Sports',url:'https://raw.githubusercontent.com/hasanraf/sports/refs/heads/main/sports.m3u'},
-        {name:'Entertainment',url:'https://raw.githubusercontent.com/hasanraf/entertainment/refs/heads/main/entertainment.m3u'},
-        {name:'Movies',url:'https://raw.githubusercontent.com/hasanraf/Movies/refs/heads/main/movie.m3u'},
-        {name:'News',url:'https://raw.githubusercontent.com/hasanraf/News/refs/heads/main/news.m3u'},
-        {name:'Wild Life',url:'https://raw.githubusercontent.com/hasanraf/wildlife/refs/heads/main/wild.m3u'}
+        {name:'Movies',url:'https://raw.githubusercontent.com/hasanraf/Movies/refs/heads/main/movie.m3u'}
     ];
 
-    function initIPTV() {
-        const tabsBox = document.getElementById("tabs");
-        if (tabsBox.children.length > 0) return;
-        playlists.forEach((p, i) => {
-            const t = document.createElement("div");
-            t.className = "tab" + (i === 0 ? " active" : "");
-            t.innerText = p.name;
-            t.onclick = () => loadCategory(p.url, t);
-            tabsBox.appendChild(t);
+    function loadPlaylists() {
+        const box = document.getElementById("tabs");
+        if (box.children.length > 0) return;
+        sources.forEach((s, i) => {
+            const btn = document.createElement("div");
+            btn.className = "tab" + (i===0?" active":"");
+            btn.innerText = s.name;
+            btn.onclick = () => fetchM3U(s.url, btn);
+            box.appendChild(btn);
         });
-        loadCategory(playlists[0].url, tabsBox.firstChild);
+        fetchM3U(sources[0].url, box.firstChild);
     }
 
-    async function loadCategory(url, tab) {
+    async function fetchM3U(url, el) {
         document.querySelectorAll(".tab").forEach(t => t.classList.remove("active"));
-        tab.classList.add("active");
+        el.classList.add("active");
         try {
             const res = await fetch(url);
             const text = await res.text();
-            const channels = [];
-            text.split("\n").forEach((line, i, arr) => {
-                if (line.includes("#EXTINF")) {
-                    const stream = arr[i+1]?.trim();
-                    if (stream?.startsWith("http")) {
-                        const name = line.split(",")[1] || "Channel";
-                        const logo = line.match(/tvg-logo="(.*?)"/)?.[1] || "https://via.placeholder.com/100";
-                        channels.push({ name, url: stream, logo });
+            const chs = [];
+            text.split("\n").forEach((l, i, a) => {
+                if (l.includes("#EXTINF")) {
+                    const link = a[i+1]?.trim();
+                    if (link?.startsWith("http")) {
+                        const name = l.split(",")[1] || "Channel";
+                        const logo = l.match(/tvg-logo="(.*?)"/)?.[1] || "";
+                        chs.push({ name, url: link, logo });
                     }
                 }
             });
-            renderGrid(channels);
-        } catch (e) { console.error("Playlist Error"); }
-    }
-
-    function renderGrid(list) {
-        document.getElementById("grid").innerHTML = list.map(ch => `
-            <div class="card" onclick="window.playStream('${ch.url}')">
-                <img class="logo" src="${ch.logo}" onerror="this.src='https://via.placeholder.com/100'">
-                <div class="name">${ch.name}</div>
-            </div>
-        `).join("");
+            document.getElementById("grid").innerHTML = chs.map(c => `
+                <div class="card" onclick="play('${c.url}')">
+                    <img src="${c.logo}" onerror="this.src='https://via.placeholder.com/60?text=TV'">
+                    <div style="font-size:11px; font-weight:600; color:#cbd5e1">${c.name}</div>
+                </div>
+            `).join("");
+        } catch(e) { console.error("M3U Load Error"); }
     }
 
     let hls;
-    window.playStream = (url) => {
-        document.getElementById("player").style.display = "block";
+    window.play = (url) => {
         const v = document.getElementById("video");
+        document.getElementById("player").style.display = "block";
         if (hls) hls.destroy();
         if (Hls.isSupported()) {
             hls = new Hls(); hls.loadSource(url); hls.attachMedia(v);
